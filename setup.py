@@ -16,6 +16,9 @@ setup(
             "secret_service = proton.keyring_linux:KeyringBackendLinuxSecretService"
         ]
     },
+    extras_require={
+        "development": ["pytest", "pytest-cov"]
+    },
     packages=find_namespace_packages(include=['proton.*']),
     include_package_data=True,
     license="GPLv3",

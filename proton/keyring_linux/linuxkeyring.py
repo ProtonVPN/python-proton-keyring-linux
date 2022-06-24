@@ -1,29 +1,29 @@
 import json
-from proton.keyring._base import KeyringBackend, KeyringNotWorking
 import os
 
+import keyring
+from proton.keyring._base import Keyring
+from proton.keyring.exceptions import KeyringNotWorking
+import logging
 
-class KeyringBackendLinux(KeyringBackend):
-    __keyring_service = 'Proton'
+logger = logging.getLogger(__name__)
 
-    @classmethod
-    def _get_priority(cls) -> int:
-        # Make sure this is not instantiable if not explicitely overriden
-        return None
+
+class KeyringBackendLinux(Keyring):
+    __keyring_service = "Proton"
 
     def __init__(self, keyring_backend):
+        super().__init__()
         self.__keyring_backend = keyring_backend
 
-    def __getitem__(self, key):
-        self._ensure_key_is_valid(key)
-
+    def _get_item(self, key):
         try:
             stored_data = self.__keyring_backend.get_password(
                 self.__keyring_service,
                 key
             )
-        except Exception as e:
-            raise KeyError(key)
+        except keyring.errors.KeyringError as e:
+            raise KeyringNotWorking(e) from e
 
         # Since we're borrowing the dict interface,
         # be consistent and throw a KeyError if it doesn't exist
@@ -32,29 +32,20 @@ class KeyringBackendLinux(KeyringBackend):
 
         try:
             return json.loads(stored_data)
-        except Exception as e:
-            #FIXME: log maybe
+        except json.JSONDecodeError as e:
             # Delete data (it's invalid anyway)
-            del self[key]
-            raise KeyError(key)
+            self._del_item(key)
+            raise KeyError(key) from e
 
-    def __delitem__(self, key):
-        import keyring
-
-        self._ensure_key_is_valid(key)
-
+    def _del_item(self, key):
         try:
             self.__keyring_backend.delete_password(self.__keyring_service, key)
         except keyring.errors.PasswordDeleteError as e:
-            raise KeyError(key)
-        except Exception as e:
-            #FIXME: log
-            raise KeyringNotWorking()
+            raise KeyError(key) from e
+        except keyring.errors.KeyringError as e:
+            raise KeyringNotWorking(e) from e
 
-    def __setitem__(self, key, value):
-        self._ensure_key_is_valid(key)
-        self._ensure_value_is_valid(value)
-
+    def _set_item(self, key, value):
         json_data = json.dumps(value)
         try:
             self.__keyring_backend.set_password(
@@ -62,12 +53,13 @@ class KeyringBackendLinux(KeyringBackend):
                 key,
                 json_data
             )
-        except Exception as e:
-            #FIXME: log
-            raise KeyringNotWorking()
+        except keyring.errors.PasswordSetError as e:
+            raise KeyError(e)
+        except keyring.errors.KeyringError as e:
+            raise KeyringNotWorking(e) from e
 
     @classmethod
-    def _is_backend_working(self , keyring_backend):
+    def _is_backend_working(self, keyring_backend):
         """Check that a backend is working properly.
 
         It can happen so that a backend is installed but it might be
@@ -77,17 +69,20 @@ class KeyringBackendLinux(KeyringBackend):
         keyring.errors.InitError will be thrown if the backend system can not be initialized,
         indicating that possibly it might be misconfigured.
         """
-        import keyring
         try:
             keyring_backend.get_password(
                 "ProtonVPN",
                 "TestingThatBackendIsWorking"
             )
             return True
-        except (keyring.errors.InitError) as e:
+        except (
+            keyring.errors.InitError, keyring.errors.KeyringLocked,
+            keyring.errors.NoKeyringError
+        ):
+            logger.exception(f"Keyring \"{keyring_backend}\" error")
             return False
-        except: # noqa
-            #FIXME: we might want to log that
+        except Exception as e: # noqa
+            logger.exception(f"Unexpected keyring \"{keyring_backend}\" error")
             return False
 
 
@@ -95,20 +90,25 @@ class KeyringBackendLinuxKwallet(KeyringBackendLinux):
     @classmethod
     def _get_priority(cls):
         # We want to have more priority if we're using KDE, otherwise slightly less
-        
+
         if 'KDE' in os.getenv('XDG_CURRENT_DESKTOP', '').split(":"):
             return 5.1
-        
+
         return 4.9
 
     @classmethod
     def _validate(cls):
-        from keyring.backends import kwallet
-        return cls._is_backend_working(kwallet.DBusKeyring())
+        try:
+            from keyring.backends import kwallet
+            return cls._is_backend_working(kwallet.DBusKeyring())
+        except ModuleNotFoundError:
+            logger.debug("Kwallet module not found")
+            return False
 
     def __init__(self):
         from keyring.backends import kwallet
         super().__init__(kwallet.DBusKeyring())
+
 
 class KeyringBackendLinuxSecretService(KeyringBackendLinux):
     @classmethod
@@ -117,8 +117,12 @@ class KeyringBackendLinuxSecretService(KeyringBackendLinux):
 
     @classmethod
     def _validate(cls):
-        from keyring.backends import SecretService
-        return cls._is_backend_working(SecretService.Keyring())
+        try:
+            from keyring.backends import SecretService
+            return cls._is_backend_working(SecretService.Keyring())
+        except ModuleNotFoundError:
+            logger.debug("Gnome-Keyring module not found")
+            return False
 
     def __init__(self):
         from keyring.backends import SecretService
