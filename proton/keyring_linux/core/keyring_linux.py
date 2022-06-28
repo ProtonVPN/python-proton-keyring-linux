@@ -1,5 +1,4 @@
 import json
-import os
 
 import keyring
 from proton.keyring._base import Keyring
@@ -84,46 +83,3 @@ class KeyringBackendLinux(Keyring):
         except Exception as e: # noqa
             logger.exception(f"Unexpected keyring \"{keyring_backend}\" error")
             return False
-
-
-class KeyringBackendLinuxKwallet(KeyringBackendLinux):
-    @classmethod
-    def _get_priority(cls):
-        # We want to have more priority if we're using KDE, otherwise slightly less
-
-        if 'KDE' in os.getenv('XDG_CURRENT_DESKTOP', '').split(":"):
-            return 5.1
-
-        return 4.9
-
-    @classmethod
-    def _validate(cls):
-        try:
-            from keyring.backends import kwallet
-            return cls._is_backend_working(kwallet.DBusKeyring())
-        except ModuleNotFoundError:
-            logger.debug("Kwallet module not found")
-            return False
-
-    def __init__(self):
-        from keyring.backends import kwallet
-        super().__init__(kwallet.DBusKeyring())
-
-
-class KeyringBackendLinuxSecretService(KeyringBackendLinux):
-    @classmethod
-    def _get_priority(cls):
-        return 5.
-
-    @classmethod
-    def _validate(cls):
-        try:
-            from keyring.backends import SecretService
-            return cls._is_backend_working(SecretService.Keyring())
-        except ModuleNotFoundError:
-            logger.debug("Gnome-Keyring module not found")
-            return False
-
-    def __init__(self):
-        from keyring.backends import SecretService
-        super().__init__(SecretService.Keyring())

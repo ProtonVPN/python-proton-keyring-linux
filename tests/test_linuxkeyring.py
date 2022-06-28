@@ -1,4 +1,4 @@
-from proton.keyring_linux.linuxkeyring import KeyringBackendLinux
+from proton.keyring_linux.core import KeyringBackendLinux
 import pytest
 from unittest import mock
 import json
