@@ -55,7 +55,7 @@ def test_get_item_raises_exception_no_data(mock_backend, keyring_service):
 def test_get_item_raises_exception_corrupted_data(mock_backend, keyring_service):
     mock_backend.get_password.return_value = "corrupted-data"
     k = KeyringBackendLinux(keyring_backend=mock_backend)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(KeyError):
         k._get_item("test")
 
 
