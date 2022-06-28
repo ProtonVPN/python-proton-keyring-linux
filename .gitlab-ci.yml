@@ -1,0 +1,4 @@
+include:
+ - project: 'ProtonVPN/Linux/new-client/integration/ci-libraries'
+   ref: develop
+   file: 'develop-pipeline.yml'

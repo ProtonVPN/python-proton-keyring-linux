@@ -4,22 +4,16 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="proton-keyring-linux",
-    version="0.0.0",
+    version="0.0.1",
     description="Proton Technologies keyring plugins for linux",
     author="Proton Technologies",
     author_email="contact@protonmail.com",
     url="https://github.com/ProtonMail/python-proton-core",
     install_requires=["proton-core", "keyring"],
-    entry_points={
-        "proton_loader_keyring": [
-            "kwallet = proton.keyring_linux:KeyringBackendLinuxKwallet",
-            "secret_service = proton.keyring_linux:KeyringBackendLinuxSecretService"
-        ]
-    },
     extras_require={
         "development": ["pytest", "pytest-cov"]
     },
-    packages=find_namespace_packages(include=['proton.*']),
+    packages=find_namespace_packages(include=['proton.keyring_linux.core']),
     include_package_data=True,
     license="GPLv3",
     platforms="OS Independent",
