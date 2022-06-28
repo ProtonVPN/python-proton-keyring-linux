@@ -1,4 +1,4 @@
-%define unmangled_name proton-keyringlinux
+%define unmangled_name proton-keyring-linux
 %define version 0.0.1
 %define release 1
 
@@ -41,7 +41,7 @@ python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUI
 
 %files -f INSTALLED_FILES
 %{python3_sitelib}/proton/
-%{python3_sitelib}/proton_keyringlinux-%{version}*.egg-info/
+%{python3_sitelib}/proton_keyring_linux-%{version}*.egg-info/
 %defattr(-,root,root)
 
 %changelog

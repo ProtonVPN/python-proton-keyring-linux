@@ -1,4 +1,4 @@
-Source: proton-keyringlinux
+Source: proton-keyring-linux
 Section: python
 Priority: optional
 Maintainer: Proton Technologies AG <opensource@proton.me>
@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 9), dh-python, python3-all, python3-setuptools, pyt
 Standards-Version: 4.1.1
 X-Python3-Version: >= 3.8
 
-Package: python3-proton-keyringlinux
+Package: python3-proton-keyring-linux
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-proton-core, python3-keyring 
 Description: Python3 Proton linux keyring base implementation
