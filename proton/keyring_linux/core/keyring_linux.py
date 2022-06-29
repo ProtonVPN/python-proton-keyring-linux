@@ -2,7 +2,7 @@ import json
 
 import keyring
 from proton.keyring._base import Keyring
-from proton.keyring.exceptions import KeyringNotWorking
+from proton.keyring.exceptions import KeyringLocked, KeyringError
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,8 +21,10 @@ class KeyringBackendLinux(Keyring):
                 self.__keyring_service,
                 key
             )
+        except keyring.errors.KeyringLocked as e:
+            raise KeyringLocked("Keyring is locked") from e
         except keyring.errors.KeyringError as e:
-            raise KeyringNotWorking(e) from e
+            raise KeyringError(e) from e
 
         # Since we're borrowing the dict interface,
         # be consistent and throw a KeyError if it doesn't exist
@@ -42,7 +44,7 @@ class KeyringBackendLinux(Keyring):
         except keyring.errors.PasswordDeleteError as e:
             raise KeyError(key) from e
         except keyring.errors.KeyringError as e:
-            raise KeyringNotWorking(e) from e
+            raise KeyringError(e) from e
 
     def _set_item(self, key, value):
         json_data = json.dumps(value)
@@ -55,7 +57,7 @@ class KeyringBackendLinux(Keyring):
         except keyring.errors.PasswordSetError as e:
             raise KeyError(e)
         except keyring.errors.KeyringError as e:
-            raise KeyringNotWorking(e) from e
+            raise KeyringError(e) from e
 
     @classmethod
     def _is_backend_working(self, keyring_backend):

@@ -2,7 +2,7 @@ from proton.keyring_linux.core import KeyringBackendLinux
 import pytest
 from unittest import mock
 import json
-from proton.keyring.exceptions import KeyringNotWorking
+from proton.keyring.exceptions import KeyringError
 from keyring import errors
 
 
@@ -41,7 +41,7 @@ def test_set_item(mock_backend, keyring_service):
 def test_get_item_raises_exception_with_keyring_issues(mock_backend, keyring_service):
     mock_backend.get_password.side_effect = errors.KeyringError()
     k = KeyringBackendLinux(keyring_backend=mock_backend)
-    with pytest.raises(KeyringNotWorking):
+    with pytest.raises(KeyringError):
         k._get_item("test")
 
 
@@ -69,7 +69,7 @@ def test_del_item_raises_exception_missing_key(mock_backend, keyring_service):
 def test_del_item_raises_exception_keyring_error(mock_backend, keyring_service):
     mock_backend.delete_password.side_effect = errors.KeyringError()
     k = KeyringBackendLinux(keyring_backend=mock_backend)
-    with pytest.raises(KeyringNotWorking):
+    with pytest.raises(KeyringError):
         k._del_item("test")
 
 
@@ -83,5 +83,5 @@ def test_set_item_raises_exception_keyring_unable_to_add(mock_backend, keyring_s
 def test_set_item_raises_exception_keyring_error(mock_backend, keyring_service):
     mock_backend.set_password.side_effect = errors.KeyringError()
     k = KeyringBackendLinux(keyring_backend=mock_backend)
-    with pytest.raises(KeyringNotWorking):
+    with pytest.raises(KeyringError):
         k._set_item("test", ["test"])
