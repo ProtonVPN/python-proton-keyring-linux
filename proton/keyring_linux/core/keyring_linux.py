@@ -56,11 +56,15 @@ class KeyringBackendLinux(Keyring):
         if stored_data is None:
             raise KeyError(key)
 
+        # stops each \n being replaced with an actual newline
+        stored_data = stored_data.replace("\n", "\\n")
+
         try:
             return json.loads(stored_data)
         except json.JSONDecodeError as e:
             # Delete data (it's invalid anyway)
             self._del_item(key)
+            logging.exception("Keyring credential is not valid JSON, deleting")
             raise KeyError(key) from e
 
     def _del_item(self, key):
