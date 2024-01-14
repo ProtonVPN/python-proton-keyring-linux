@@ -56,7 +56,7 @@ class KeyringBackendLinux(Keyring):
         if stored_data is None:
             raise KeyError(key)
 
-        # stops each \n being replaced with an actual newline
+        # Stops each \n being replaced with an actual newline
         stored_data = stored_data.replace("\n", "\\n")
 
         try:
