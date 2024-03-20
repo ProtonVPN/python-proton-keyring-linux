@@ -35,7 +35,7 @@ def mock_backend():
 
 @pytest.fixture
 def keyring_service():
-    return KeyringBackendLinux._KeyringBackendLinux__keyring_service
+    return KeyringBackendLinux.KEYRING_SERVICE
 
 
 def test_get_item(mock_backend, keyring_service):
