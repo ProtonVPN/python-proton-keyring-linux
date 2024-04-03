@@ -9,5 +9,4 @@ X-Python3-Version: >= 3.8
 Package: python3-proton-keyring-linux
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-proton-core, python3-keyring
-Breaks:  python3-proton-keyring-linux-secretservice (<< 0.0.2) 
 Description: Python3 Proton linux keyring base implementation

@@ -21,8 +21,7 @@ BuildRequires: python3-keyring
 BuildRequires: python3-proton-core
 BuildRequires: python3-setuptools
 Requires: python3-proton-core
-Requires: python3-keyring 
-Conflicts: python3-proton-keyring-linux-secretservice < 0.0.2
+Requires: python3-keyring
 
 %{?python_disable_dependency_generator}
 
