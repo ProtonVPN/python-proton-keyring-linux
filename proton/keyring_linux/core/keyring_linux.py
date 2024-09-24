@@ -45,9 +45,10 @@ class KeyringBackendLinux(Keyring):  # pylint: disable=too-few-public-methods
         super().__init__()
         self.__keyring_backend = keyring_backend
 
+    # pylint: disable=duplicate-code
     def _get_item(self, key):
         try:
-            stored_data = self.__keyring_backend.get_password(
+            stored_data = self.__keyring_backend.get_password(  # pylint: disable=duplicate-code
                 self.KEYRING_SERVICE,
                 key
             )

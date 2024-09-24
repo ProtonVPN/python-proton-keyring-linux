@@ -1,5 +1,5 @@
 %define unmangled_name proton-keyring-linux
-%define version 0.0.2
+%define version 0.1.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -17,11 +17,19 @@ Source0: %{unmangled_name}-%{version}.tar.gz
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
 
-BuildRequires: python3-keyring 
-BuildRequires: python3-proton-core
 BuildRequires: python3-setuptools
-Requires: python3-proton-core
+BuildRequires: gnome-keyring
+BuildRequires: python3-keyring
+BuildRequires: python3-secretstorage 
+BuildRequires: python3-proton-core
+
+Requires: gnome-keyring
 Requires: python3-keyring
+Requires: python3-secretstorage 
+Requires: python3-proton-core
+
+Conflicts: python3-proton-keyring-linux-secretservice < 0.1.0
+Obsoletes: python3-proton-keyring-linux-secretservice
 
 %{?python_disable_dependency_generator}
 
@@ -45,6 +53,9 @@ python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUI
 %defattr(-,root,root)
 
 %changelog
+* Tue Sep 24 2024 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.1.0
+- Merge proton-keyring-linux-secret-service into this one.
+
 * Wed Mar 20 2024 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.0.2
 - Update class property
 
