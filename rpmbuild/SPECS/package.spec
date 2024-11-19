@@ -1,5 +1,5 @@
 %define unmangled_name proton-keyring-linux
-%define version 0.1.0
+%define version 0.2.0
 %define release 1
 
 Prefix: %{_prefix}
@@ -53,6 +53,9 @@ python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUI
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 19 2024 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.2.0
+- Drop Ubuntu 20.04 support.
+
 * Tue Sep 24 2024 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.1.0
 - Merge proton-keyring-linux-secret-service into this one.
 
