@@ -4,7 +4,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="proton-keyring-linux",
-    version="0.2.0",
+    version="0.2.1",
     description="Proton Technologies keyring plugins for linux",
     author="Proton AG",
     author_email="opensource@proton.me",

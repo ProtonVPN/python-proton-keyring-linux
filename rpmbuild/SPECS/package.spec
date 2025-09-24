@@ -1,5 +1,6 @@
 %define unmangled_name proton-keyring-linux
-%define version 0.2.0
+%define pep_625_name proton_keyring_linux
+%define version 0.2.1
 %define release 1
 
 Prefix: %{_prefix}
@@ -13,10 +14,11 @@ Group: ProtonVPN
 License: GPLv3
 Vendor: Proton AG <opensource@proton.me>
 URL: https://github.com/ProtonVPN/python-%{unmangled_name}
-Source0: %{unmangled_name}-%{version}.tar.gz
+Source0: %{pep_625_name}-%{version}.tar.gz
 BuildArch: noarch
-BuildRoot: %{_tmppath}/%{unmangled_name}-%{version}-%{release}-buildroot
+BuildRoot: %{_tmppath}/%{pep_625_name}-%{version}-%{release}-buildroot
 
+BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: gnome-keyring
 BuildRequires: python3-keyring
@@ -36,23 +38,25 @@ Obsoletes: python3-proton-keyring-linux-secretservice
 %description
 Package %{unmangled_name} library.
 
-
 %prep
-%setup -n %{unmangled_name}-%{version} -n %{unmangled_name}-%{version}
+%setup -q -n %{pep_625_name}-%{version}
 
 %build
-python3 setup.py build
+%pyproject_wheel
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
+%pyproject_install
+%pyproject_save_files proton 
 
+%check
+%pyproject_check_import
 
-%files -f INSTALLED_FILES
-%{python3_sitelib}/proton/
-%{python3_sitelib}/proton_keyring_linux-%{version}*.egg-info/
-%defattr(-,root,root)
+%files -n %{name} -f %{pyproject_files}
 
 %changelog
+* Mon Sep 22 2025 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.2.1
+- Update spec file.
+
 * Tue Nov 19 2024 Alexandru Cheltuitor <alexandru.cheltuitor@proton.ch> 0.2.0
 - Drop Ubuntu 20.04 support.
 
