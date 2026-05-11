@@ -82,7 +82,8 @@ class KeyringBackendLinux(Keyring):  # pylint: disable=too-few-public-methods
             raise KeyringError(excp) from excp
 
     def _set_item(self, key, value):
-        json_data = json.dumps(value)
+        value = json.dumps(value).replace("\n", "\\n")
+        json_data = value
         try:
             self.__keyring_backend.set_password(
                 self.KEYRING_SERVICE,
