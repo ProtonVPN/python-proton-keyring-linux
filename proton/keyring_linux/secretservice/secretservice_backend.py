@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 """
 import json
+import base64
 
 import logging
 import keyring
@@ -70,7 +71,7 @@ class KeyringBackendLinuxSecretService(KeyringBackendLinux):
             raise KeyError(key)
 
         try:
-            return json.loads(stored_data)
+            return json.loads(base64.b64decode(stored_data).decode("utf-8"))
         except json.JSONDecodeError:
             # gnome-keyring has a bug when processing new lines.
             # Anytime we store the data to the keyring, we store all newlines in
