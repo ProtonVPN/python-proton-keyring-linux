@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 """
 import json
+import base64
 import logging
 
 import keyring
@@ -65,7 +66,7 @@ class KeyringBackendLinux(Keyring):  # pylint: disable=too-few-public-methods
             raise KeyError(key)
 
         try:
-            return json.loads(stored_data)
+            return json.loads(base64.b64decode(stored_data).decode("utf-8"))
         except json.JSONDecodeError as excp:
             # Delete data (it's invalid anyway)
             self._del_item(key)
@@ -82,7 +83,8 @@ class KeyringBackendLinux(Keyring):  # pylint: disable=too-few-public-methods
             raise KeyringError(excp) from excp
 
     def _set_item(self, key, value):
-        json_data = json.dumps(value)
+        value = json.dumps(value)
+        json_data = base64.b64encode(value.encode("utf-8")).decode("utf-8")
         try:
             self.__keyring_backend.set_password(
                 self.KEYRING_SERVICE,
