@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 """
 import json
+import os
 
 import logging
 import keyring
@@ -37,6 +38,9 @@ class KeyringBackendLinuxSecretService(KeyringBackendLinux):
 
     @classmethod
     def _validate(cls):
+        # this keyring doesn't work with snap containment
+        if os.environ.get("SNAP") is not None:
+            return False
         try:
             # pylint: disable=import-outside-toplevel
             from keyring.backends import SecretService

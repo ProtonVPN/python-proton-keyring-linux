@@ -4,7 +4,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="proton-keyring-linux",
-    version="0.2.1",
+    version="0.2.2",
     description="Proton Technologies keyring plugins for linux",
     author="Proton AG",
     author_email="opensource@proton.me",
@@ -14,11 +14,12 @@ setup(
         "development": ["pytest", "pytest-coverage", "pylint", "flake8"]
     },
     packages=find_namespace_packages(include=[
-        "proton.keyring_linux.core*", "proton.keyring_linux.secretservice*"]),
+        "proton.keyring_linux.core*", "proton.keyring_linux.secretservice*","proton.keyring_linux.libsecret*"]),
     include_package_data=True,
     entry_points={
         "proton_loader_keyring": [
-            "secret_service = proton.keyring_linux.secretservice:KeyringBackendLinuxSecretService"
+            "secret_service = proton.keyring_linux.secretservice:KeyringBackendLinuxSecretService",
+            "libsecret = proton.keyring_linux.libsecret:LibsecretKeyringBackend" 
         ]
     },
     python_requires=">=3.9",
