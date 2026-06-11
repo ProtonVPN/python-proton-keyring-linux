@@ -1,3 +1,9 @@
+proton-keyring-linux (0.2.3) unstable; urgency=medium
+
+  * Restrict libsecret backend to Snap only.
+
+ -- Elena Švilpė <elena.svilpe@proton.ch>  Mon, 11 Jun 2026 11:00:00 +0100
+
 proton-keyring-linux (0.2.2) unstable; urgency=medium
 
   * Add libsecret backend.

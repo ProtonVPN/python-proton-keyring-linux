@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 import logging
 from proton.keyring_linux.core import KeyringBackendLinux
 
@@ -57,6 +58,10 @@ class LibsecretKeyringBackend(KeyringBackendLinux):
 
     @classmethod
     def _validate(cls):
+        # libsecret backend should only be available for Snap
+        # https://snapcraft.io/docs/reference/development/environment-variables/#snap
+        if os.environ.get("SNAP") is None:
+            return False
         try:
             secret = cls._get_secret()
         except ValueError:

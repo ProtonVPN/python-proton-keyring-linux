@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 import pytest
 from unittest.mock import MagicMock
 from proton.keyring_linux.libsecret import LibsecretKeyringBackend
@@ -39,6 +40,19 @@ def test_validation_fails_when_libsecret_not_available():
     LibsecretKeyringBackend._secret_module = None
     LibsecretKeyringBackend._import_secret = staticmethod(raise_value_error)
 
+    assert not LibsecretKeyringBackend._validate()
+
+def test_validate_succeeds_with_snap_path(mock_secret, monkeypatch):
+    monkeypatch.setenv("SNAP", "test_value")
+    LibsecretKeyringBackend._secret_cache = mock_secret
+
+    assert LibsecretKeyringBackend._validate()
+
+def test_validate_fails_without_snap_path(mock_secret, monkeypatch):
+    # libsecret dependency is available but the app is not packaged in snap
+    monkeypatch.delenv("SNAP", raising=False)
+    LibsecretKeyringBackend._secret_cache = mock_secret
+    
     assert not LibsecretKeyringBackend._validate()
 
 def test_get_secret_lazy_imports_when_not_cached(mock_secret):

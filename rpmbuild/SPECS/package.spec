@@ -1,6 +1,6 @@
 %define unmangled_name proton-keyring-linux
 %define pep_625_name proton_keyring_linux
-%define version 0.2.2
+%define version 0.2.3
 %define release 1
 
 Prefix: %{_prefix}
@@ -54,6 +54,9 @@ Package %{unmangled_name} library.
 %files -n %{name} -f %{pyproject_files}
 
 %changelog
+* Mon Jun 11 2026 Elena Švilpė <elena.svilpe@proton.ch> 0.2.3
+- Restrict libsecret backend to Snap only.
+
 * Mon Jun 1 2026 Elena Švilpė <elena.svilpe@proton.ch> 0.2.2
 - Add libsecret backend.
 
